@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Chat with your business documents</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --ink: #1a1d21; --muted: #6b7280;
+    --line: #e5e7eb; --accent: #0f6e56; --accent-soft: #e1f5ee;
+    --warn: #9a5b00; --warn-soft: #fdf1df;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e1113; --card: #171a1d; --ink: #e8eaed; --muted: #9aa1a9;
+      --line: #2a2f34; --accent: #5dcaa5; --accent-soft: #10352c;
+      --warn: #e0a458; --warn-soft: #2a2113;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    display: flex; justify-content: center; padding: 32px 16px;
+  }
+  .wrap { width: 100%; max-width: 680px; }
+  h1 { font-size: 22px; font-weight: 600; margin: 0 0 4px; }
+  .sub { color: var(--muted); margin: 0 0 20px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 12px; padding: 20px; margin-bottom: 16px;
+  }
+  .row { display: flex; gap: 8px; }
+  input[type=text] {
+    flex: 1; padding: 12px 14px; font-size: 16px; color: var(--ink);
+    background: transparent; border: 1px solid var(--line); border-radius: 8px;
+  }
+  input[type=text]:focus { outline: none; border-color: var(--accent); }
+  button {
+    padding: 12px 18px; font-size: 16px; font-weight: 500; cursor: pointer;
+    background: var(--accent); color: #fff; border: none; border-radius: 8px;
+  }
+  button:disabled { opacity: .55; cursor: default; }
+  .chips { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    font-size: 13px; padding: 5px 10px; border-radius: 999px; cursor: pointer;
+    background: var(--accent-soft); color: var(--accent); border: none;
+  }
+  .answer { white-space: pre-wrap; margin: 0; }
+  .handoff { background: var(--warn-soft); border-color: var(--warn); }
+  .label { font-size: 12px; text-transform: uppercase; letter-spacing: .04em;
+           color: var(--muted); margin: 0 0 8px; }
+  .src { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .src .tag {
+    font-size: 12px; padding: 4px 9px; border-radius: 6px;
+    border: 1px solid var(--line); color: var(--muted);
+  }
+  .hidden { display: none; }
+  .spin { color: var(--muted); }
+  footer { color: var(--muted); font-size: 13px; text-align: center; margin-top: 8px; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Chat with your business documents</h1>
+    <p class="sub">Grounded answers from your own docs, with citations — and an honest "I don't know" when the answer isn't there.</p>
+
+    <div class="card">
+      <div class="row">
+        <input id="q" type="text" placeholder="Ask a question…" autocomplete="off" />
+        <button id="ask">Ask</button>
+      </div>
+      <div class="chips" id="samples">
+        <button class="chip">Can I check in early, and do you allow dogs?</button>
+        <button class="chip">What's your cancellation policy?</button>
+        <button class="chip">Is there wifi?</button>
+        <button class="chip">Do you have a swimming pool?</button>
+      </div>
+    </div>
+
+    <div class="card hidden" id="result">
+      <p class="label">Answer</p>
+      <p class="answer" id="answer"></p>
+      <div class="src" id="sources"></div>
+    </div>
+
+    <footer>Pivot Bureau · RAG demo · retrieval-grounded, no hallucinated facts</footer>
+  </div>
+
+<script>
+  const qEl = document.getElementById('q');
+  const askBtn = document.getElementById('ask');
+  const resultEl = document.getElementById('result');
+  const answerEl = document.getElementById('answer');
+  const sourcesEl = document.getElementById('sources');
+
+  async function ask(question) {
+    if (!question.trim()) return;
+    askBtn.disabled = true;
+    resultEl.classList.remove('hidden', 'handoff');
+    answerEl.innerHTML = '<span class="spin">Thinking…</span>';
+    sourcesEl.innerHTML = '';
+    try {
+      const res = await fetch('/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question })
+      });
+      const data = await res.json();
+      // split the model's trailing "Sources:" line off the body
+      const parts = data.answer.split(/\n?Sources:/i);
+      answerEl.textContent = parts[0].trim();
+      const handed = /pass (the|your) question to the team|don't have that information/i.test(data.answer);
+      resultEl.classList.toggle('handoff', handed);
+      sourcesEl.innerHTML = (data.sources || [])
+        .map(s => `<span class="tag">${s.source}#${s.chunk_index} · ${s.score}</span>`)
+        .join('');
+    } catch (e) {
+      answerEl.textContent = 'Something went wrong reaching the server.';
+    } finally {
+      askBtn.disabled = false;
+    }
+  }
+
+  askBtn.addEventListener('click', () => ask(qEl.value));
+  qEl.addEventListener('keydown', e => { if (e.key === 'Enter') ask(qEl.value); });
+  document.querySelectorAll('#samples .chip').forEach(c =>
+    c.addEventListener('click', () => { qEl.value = c.textContent; ask(c.textContent); }));
+</script>
+</body>
+</html>
