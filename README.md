@@ -43,4 +43,12 @@ as `DATABASE_URL`.
 ```bash
 python -m scripts.ingest data/booking-policy.md
 ```
-Loads → naive-chunks → Gemini-embeds → stores in pgvector (idempotent per source).
+Loads → structure-aware chunks → Gemini-embeds → stores in pgvector (idempotent per source).
+
+## Deploy (Render)
+Uses the [`Dockerfile`](Dockerfile) via the [`render.yaml`](render.yaml) blueprint:
+1. Render → **New + → Blueprint** → connect this repo.
+2. Set the two secret env vars in the dashboard: `DATABASE_URL` (Neon) and `GOOGLE_API_KEY` (Gemini). The rest come from the blueprint.
+3. Deploy → Render gives a `*.onrender.com` URL. Add `rag.pivotbureau.com` as a custom domain, then CNAME it in Cloudflare.
+
+Note: on the free tier both Render and Neon spin down when idle, so the first request after a lull cold-starts (~30–60s).
