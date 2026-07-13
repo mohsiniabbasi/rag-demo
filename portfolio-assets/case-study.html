@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<style>
+  @page { size: A4; margin: 16mm 16mm; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font: 11.5pt/1.5 -apple-system, "Segoe UI", Roboto, Arial, sans-serif; color: #1a1d21; }
+  .accent { color: #0f6e56; }
+  header { border-bottom: 3px solid #0f6e56; padding-bottom: 12px; margin-bottom: 18px; }
+  .brand { font-size: 10pt; letter-spacing: .12em; text-transform: uppercase; color: #6b7280; }
+  h1 { font-size: 21pt; font-weight: 700; margin: 6px 0 4px; }
+  .tag { font-size: 12pt; color: #374151; }
+  h2 { font-size: 12pt; color: #0f6e56; margin: 16px 0 6px; text-transform: uppercase; letter-spacing: .04em; }
+  p { margin-bottom: 6px; }
+  ul { margin: 0 0 6px 18px; }
+  li { margin-bottom: 3px; }
+  .pipeline { background: #e1f5ee; border-radius: 8px; padding: 10px 14px; font-size: 10.5pt; margin: 4px 0 8px; }
+  .cols { display: flex; gap: 24px; }
+  .cols > div { flex: 1; }
+  .stack { font-size: 10.5pt; color: #374151; }
+  footer { margin-top: 20px; border-top: 1px solid #e5e7eb; padding-top: 10px; font-size: 10pt; color: #6b7280; display: flex; justify-content: space-between; }
+  .strong { font-weight: 600; color: #1a1d21; }
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand">Pivot Bureau · Case Study</div>
+    <h1>RAG Assistant — <span class="accent">Chat With Your Business Documents</span></h1>
+    <div class="tag">Grounded answers from a business's own docs — every fact cited, and an honest handoff when the answer isn't there.</div>
+  </header>
+
+  <h2>The problem</h2>
+  <p>A generic chatbot answers from its training data — a blurry average of the internet — so it confidently invents prices, policies and details that are wrong for <span class="strong">your</span> business. In front of real customers, a made-up cancellation fee or a wrong opening time is a liability, not a convenience.</p>
+
+  <h2>What it does</h2>
+  <ul>
+    <li>Answers customer questions using <span class="strong">only</span> the business's own documents (FAQs, pricing, policies).</li>
+    <li>Cites the exact source passage behind every answer, so it's verifiable.</li>
+    <li>Refuses to guess: when the answer isn't in the docs it says <em>"I'll pass this to the team"</em> instead of hallucinating.</li>
+    <li>Update the documents and the answers update instantly — no retraining.</li>
+  </ul>
+
+  <h2>How it works</h2>
+  <div class="pipeline">documents &nbsp;→&nbsp; section-aware chunking &nbsp;→&nbsp; embeddings &nbsp;→&nbsp; pgvector store &nbsp;→&nbsp; semantic retrieval &nbsp;→&nbsp; grounded generation with citations</div>
+  <p>The model reasons; the retrieved passages provide the facts. Generation is constrained to those passages, which is what makes it safe to deploy customer-facing.</p>
+
+  <div class="cols">
+    <div>
+      <h2>Built &amp; shipped</h2>
+      <ul>
+        <li>Live, deployed app + public code repository.</li>
+        <li>Documented real engineering problems hit and fixed: a retired embedding model, an approximate index silently returning zero results, and naive chunking retrieving the wrong section.</li>
+        <li>Fixes measured with a before/after retrieval evaluation.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Why it matters</h2>
+      <ul>
+        <li>"Grounded or silent" — never invents a price or policy.</li>
+        <li>Every business has documents customers ask about; this turns them into a reliable self-serve assistant.</li>
+        <li>The same pattern powers document-grounded internal tools and support automation.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Stack</h2>
+  <p class="stack">Python · FastAPI · Postgres + pgvector · Gemini embeddings &amp; generation · Docker · deployed on Render.</p>
+
+  <footer>
+    <span>Pivot Bureau</span>
+    <span>Live: rag-demo-fjos.onrender.com &nbsp;·&nbsp; Code: github.com/mohsiniabbasi/rag-demo</span>
+  </footer>
+</body>
+</html>

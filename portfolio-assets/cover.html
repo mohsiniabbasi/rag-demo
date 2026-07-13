@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1280px; height: 960px; }
+  body {
+    font: 16px -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    background: #0e2a24;
+    color: #eaf3ef;
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 84px 88px;
+  }
+  .brand { font-size: 22px; letter-spacing: .18em; text-transform: uppercase; color: #5dcaa5; font-weight: 600; }
+  h1 { font-size: 76px; line-height: 1.04; font-weight: 800; margin: 26px 0 20px; letter-spacing: -1px; }
+  h1 .hl { color: #5dcaa5; }
+  .sub { font-size: 30px; line-height: 1.4; color: #b9d3ca; max-width: 980px; }
+  .demo {
+    background: #14382f; border: 1px solid #245446; border-radius: 20px;
+    padding: 30px 34px; margin-top: 44px; max-width: 1000px;
+  }
+  .q { font-size: 24px; color: #8fb9ac; margin-bottom: 14px; }
+  .a { font-size: 27px; line-height: 1.45; }
+  .chip { display: inline-block; margin-top: 20px; font-size: 20px; color: #0e2a24;
+          background: #5dcaa5; border-radius: 999px; padding: 8px 18px; font-weight: 600; }
+  .foot { display: flex; align-items: center; gap: 20px; font-size: 24px; color: #b9d3ca; }
+  .badge { background: #5dcaa5; color: #0e2a24; font-weight: 700; padding: 10px 20px; border-radius: 10px; font-size: 22px; }
+  .stack { margin-left: auto; font-size: 22px; color: #7fa89b; }
+</style>
+</head>
+<body>
+  <div>
+    <div class="brand">Pivot Bureau</div>
+    <h1>Chat with your<br><span class="hl">business documents</span></h1>
+    <div class="sub">A grounded RAG assistant that answers from your own docs — with a citation for every fact, and no invented prices or policies.</div>
+
+    <div class="demo">
+      <div class="q">“Can I check in early, and do you allow dogs?”</div>
+      <div class="a">Yes — early check-in from 1pm for £25 if the previous guest has left. Dogs allowed, max 2, £30 cleaning fee.</div>
+      <span class="chip">source: booking-policy.md</span>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span class="badge">Grounded or silent</span>
+    <span>cites its source · refuses to hallucinate</span>
+    <span class="stack">FastAPI · pgvector · Gemini</span>
+  </div>
+</body>
+</html>
